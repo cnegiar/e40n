@@ -16,5 +16,5 @@ def hamming(s1,s2):
     for i in range (min_len): 
     	if s1[i] != s2[i]: 
     		hamming_d+=1
-    ber = hamming_d/ min_len
+    ber = float(hamming_d)/ min_len
     return hamming_d, ber
