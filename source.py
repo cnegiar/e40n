@@ -25,8 +25,8 @@ class Source:
                     payload= self.bits_from_image(self.fname)
                     srctype= '00'
                 else:           
-                    payload = self.text2bits(self.fname) 
-                    srctype='01'                   
+                    payload = self.text2bits(self.fname)
+                    srctype='01'
             else:               
                 length = len(self.monotone)
                 for i in xrange (length):
@@ -60,7 +60,7 @@ class Source:
         for coords in data:
             x = '{0:08b}'.format(coords[0])
             y = '{0:08b}'.format(coords[1])
-            for bit in x:  
+            for bit in x:
                 bits.append(int(bit))
             for bit in y:
                 bits.append(int(bit))
