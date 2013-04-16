@@ -22,15 +22,15 @@ class Source:
             srctype=0 
             if self.fname is not None:
                 if self.fname.endswith('.png') or self.fname.endswith('.PNG'):
-                    payload= self.bits_from_image(self.fname)
-                    srctype= '00'
+                    payload = self.bits_from_image(self.fname)
+                    srctype = '00'
                 else:           
                     payload = self.text2bits(self.fname)
-                    srctype='01'
+                    srctype = '01'
             else:               
-                length = len(self.monotone)
-                for i in xrange (length):
-                    payload[i]=1
+                length = self.monotone
+                for i in range (0, length):
+                    payload.append(1)
                 srctype='11'
            
 

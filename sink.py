@@ -84,7 +84,7 @@ class Sink:
     def read_header(self, header_bits): 
         # Given the header bits, compute the payload length
         # and source type (compatible with get_header on source)
-        srctype = header_bits[0] + header_bits[1]
+	srctype = header_bits[0] + header_bits[1]
         payload_length = ''
         
         for i in range (2,len(header_bits)):
@@ -92,11 +92,10 @@ class Sink:
         payload_length = int(payload_length, 2)
         
         print '\tRecd header:  [' + ' '.join(str(x) for x in header_bits) + ']'
-        
         type = ''
-        if srctype == 00: type = 'image' 
-        elif srctype == 01: type = 'text'
-        elif srctype == 11: type = 'monotone'
+        if srctype == 0: type = 'image' 
+        elif srctype == 1: type = 'text'
+        elif srctype == 2: type = 'monotone'
         else: type = 'unknown'
 
         print '\tSource type: ', type
