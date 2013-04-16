@@ -56,15 +56,14 @@ class Source:
     def bits_from_image(self, filename):
         bits=[]
         img = Image.open(filename,'r')
+        img = img.convert('L')
         data = list(img.getdata())
-        for coords in data:
-            x = '{0:08b}'.format(coords[0])
-            y = '{0:08b}'.format(coords[1])
-            for bit in x:
+        for coord in data:
+            binCoord = '{0:08b}'.format(coord)
+            for bit in binCoord:
                 bits.append(int(bit))
-            for bit in y:
-                bits.append(int(bit))
-        return bits 
+
+        return bits
 
 
 
@@ -72,7 +71,15 @@ class Source:
         # Given the payload length and the type of source 
         # (image, text, monotone), form the header
         header =''
-        length= '{0:010b}'.format(payload_length)
+        length= '{0:016b}'.format(payload_length)
         header = srctype + length
-      
+        type = "" 
+        if srctype == '00': type = 'image' 
+        elif srctype == '01': type = 'text'
+        elif srctype == '11': type = 'monotone'
+        else: type = 'unknown'
+        print '\tSource type: ', type
+        print '\tPayload Length: ', str(payload_length)
+        print '\tHeader:  [' + ', '.join(header) + ']'
+
         return header 
