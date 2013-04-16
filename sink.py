@@ -30,21 +30,21 @@ class Sink:
         header_bits=[]
         rcd_payload=[]
 
-        #Since header is forced into a 10-bit binary number and srctype is two digits
-        for i in range (0, 12):
+        #Since payload size is forced into a 16-bit binary number and srctype is two digits
+        for i in range (0, 18):
             header_bits.append(recd_bits[i])
 
         srctype, payload_length = self.read_header(header_bits)
        
-        #Start at 12 since that's where header ends, and go for payload length counts (so to payload length +12)
-        for i in range (12,payload_length+12):
+        #Start at 18 since that's where header ends, and go for payload length counts (so to payload length +12)
+        for i in range (18,payload_length+18):
             rcd_payload.append(recd_bits[i])
 
         if srctype == 0:
             self.image_from_bits(rcd_payload, 'rcd-image.png')
         elif srctype==1: 
             text= self.bits2text(rcd_payload)
-            print text
+            print "\tText recd:", text
            
         return rcd_payload
 
@@ -69,15 +69,14 @@ class Sink:
         coord_arr=[]
         i=0
         encoding = 0
-        encoding_2 = 0
-        while (i < len(bits)-17):
-            encoding = bits[i:i+8]
-            encoding_2 = bits[i+8:i+16]
         
-            i+=16
-            coord_tuple= (encoding, encoding_2)
-            coord_arr.append(coord_tuple)
-        img = Image.new('LA', [32,32])
+        while (i < len(bits)):
+            enc_raw = ''.join(str(x) for x in bits[i:i+8])
+            encoding = int(enc_raw, 2)
+            coord_arr.append(encoding)
+            i += 8
+        img = Image.new('L', [32,32])
+
         img.putdata(coord_arr)
         img.save(filename, 'PNG')
 
@@ -86,16 +85,22 @@ class Sink:
     def read_header(self, header_bits): 
         # Given the header bits, compute the payload length
         # and source type (compatible with get_header on source)
-
-
-        srctype= header_bits[0]+ header_bits[1]
-        payload_length=''
+	srctype = header_bits[0] + header_bits[1]
+        payload_length = ''
+        
         for i in range (2,len(header_bits)):
             payload_length += str(header_bits[i])
-      
         payload_length = int(payload_length, 2)
- 
-        print '\tRecd header: ', header_bits
+        
+        print '\tRecd header:  [' + ' '.join(str(x) for x in header_bits) + ']'
+        type = ''
+        if srctype == 0: type = 'image' 
+        elif srctype == 1: type = 'text'
+        elif srctype == 2: type = 'monotone'
+        else: type = 'unknown'
+
+        print '\tSource type: ', type
         print '\tLength from header: ', payload_length
-        print '\tSource type: ', srctype
+        print '\tRecd', payload_length, 'data bits:'
+
         return srctype, payload_length
