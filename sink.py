@@ -68,8 +68,8 @@ class Sink:
         # No return value required .
         coord_arr=[]
         i=0
-        encoding = 0 
-        print bits
+        encoding = 0
+        encoding_2 = 0
         while (i < len(bits)-1):
             if (bits[i]):
                 encoding = 255
@@ -82,11 +82,8 @@ class Sink:
             i+=2
             coord_tuple= (encoding, encoding_2)
             coord_arr.append(coord_tuple)
-
-        print coord_arr
-
-        img = Image.new('L', [32,32])
-        img = img.putdata(coord_arr)
+        img = Image.new('LA', [32,32])
+        img.putdata(coord_arr)
         img.save(filename, 'PNG')
 
       

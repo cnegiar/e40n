@@ -57,20 +57,24 @@ class Source:
         bits=[]
         img = Image.open(filename,'r')
         data = list(img.getdata())
-        
-        for coords in data: 
-            x =coords[0]
-            y= coords[1]
-            if (x==255):
-                bits.append(1)
-            else: 
-                bits.append(0)
+        for coords in data:
+            x = '{0:08b}'.format(coords[0])
+            y = '{0:08b}'.format(coords[1])
+            for bit in x:  
+                bits.append(int(bit))
+            for bit in y:
+                bits.append(int(bit))
+            # x = coords[0]
+            # y = coords[1]
+            # if (x==255):
+            #     bits.append(1)
+            # else: 
+            #     bits.append(0)
 
-            if (y==255):
-                bits.append(1)
-            else: 
-                bits.append(0) 
-
+            # if (y==255):
+            #     bits.append(1)
+            # else: 
+            #     bits.append(0) 
         return bits 
 
 
