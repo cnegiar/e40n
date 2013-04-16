@@ -49,7 +49,7 @@ class Source:
                 bit = ord(char)
                 binary = '{0:08b}'.format(bit)
                 for bit in binary: 
-                    bits.append(bit)
+                    bits.append(int(bit))
 
         return bits
 
