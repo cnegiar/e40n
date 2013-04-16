@@ -73,14 +73,7 @@ class Sink:
         while (i < len(bits)-17):
             encoding = bits[i:i+8]
             encoding_2 = bits[i+8:i+16]
-            # if (bits[i]):
-            #     encoding = 255
-            # else: 
-            #     encoding = 0
-            # if (bits[i+1] ): 
-            #     encoding_2= 255
-            # else : 
-            #     encoding_2 = 0
+        
             i+=16
             coord_tuple= (encoding, encoding_2)
             coord_arr.append(coord_tuple)
