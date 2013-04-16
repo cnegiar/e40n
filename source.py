@@ -64,17 +64,6 @@ class Source:
                 bits.append(int(bit))
             for bit in y:
                 bits.append(int(bit))
-            # x = coords[0]
-            # y = coords[1]
-            # if (x==255):
-            #     bits.append(1)
-            # else: 
-            #     bits.append(0)
-
-            # if (y==255):
-            #     bits.append(1)
-            # else: 
-            #     bits.append(0) 
         return bits 
 
 

@@ -71,18 +71,12 @@ class Sink:
         encoding = 0
         encoding_2 = 0
         while (i < len(bits)-17):
-            encoding = bits[i:i+8]
-            encoding_2 = bits[i+8:i+16]
-            # if (bits[i]):
-            #     encoding = 255
-            # else: 
-            #     encoding = 0
-            # if (bits[i+1] ): 
-            #     encoding_2= 255
-            # else : 
-            #     encoding_2 = 0
-            i+=16
-            coord_tuple= (encoding, encoding_2)
+            enc_raw = ''.join(str(x) for x in bits[i:i+8])
+            encoding = int(enc_raw, 2)
+            enc_raw2 = ''.join(str(x) for x in bits[i+8:i+16])
+            encoding_2 = int(enc_raw2, 2)
+            i += 16
+            coord_tuple = (encoding, encoding_2)
             coord_arr.append(coord_tuple)
         img = Image.new('LA', [32,32])
         img.putdata(coord_arr)
