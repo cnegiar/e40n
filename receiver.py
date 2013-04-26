@@ -67,7 +67,7 @@ class Receiver:
         # Fill in your implementation of the cross-correlation check procedure
         
         preamble_offset = 0
-        preamble_bits[1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1]
+        preamble_bits= [1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1]
         preamble_samples=[]
         for bit in preamble_bits:
             for x in range(self.spb):
@@ -81,7 +81,7 @@ class Receiver:
         preamble_offset= 0 
 
         #Calculate the correlation between preamble and demodulated bits in order to find preamble start in demod_bits
-        for k in range (energy_offset,len(demod_samples)):
+        for k in range (energy_offset,energy_offset+ 3*len(preamble_samples)):
             for x in range (len (preamble_samples)):
                 correlation+= (preamble_samples[x]* demod_samples[x+k]
             if correlation > largest : 
@@ -110,7 +110,49 @@ class Receiver:
         Output is the array of data_bits (bits without preamble)
         '''
 
-        # Fill in your implementation
+        preamble_bits= [1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1]
+        mean_vals=[]
+        curr_index = preamble_start
+        for x in range (len(preamble_bits)):
+            middle_bits = demod_samples[curr_index+ (self.spb/4) : curr_index+ (self.spb*3)/4]
+            mean = 0
+            for bit in middle_bits:
+                mean+= bit
+            mean/= len(middle_bits)
+            mean_vals.append(mean)
+            curr_index+= self.spb
+        mean_1 = 0 
+        mean_0 = 0 
+        for i in range len(preamble_bits):
+            if preamble_bits[i]:
+                mean_0+= preamble_bits[i]
+            else : 
+                mean_1+= preamble_bits[i]
+        # There are 9 zeros in the preamble
+        mean_0/=9
+        # There are 15 ones in the preamble 
+        mean_1/=15
+        new_threshold = (mean_1+ mean_0)/2
+
+        data_bits=[]
+
+        for x in range ((len(demod_samples) - preamble_start)/self.spb):
+            middle_bits = demod_samples[curr_index+ (self.spb/4) : curr_index+ (self.spb*3)/4]
+            mean = 0
+            for bit in middle_bits:
+                mean+= bit
+            mean/= len(middle_bits)
+            if mean > new_threshold:
+                data_bits.append(1)
+            else: 
+                data_bits.append(0)
+
+        demod_preamble = data_bits(:len(preamble_bits))
+        if demod_preamble equal preamble_bits:
+            data_bits=data_bits[len(preamble_bits):]
+        else : 
+            print '*** ERROR: Preamble was not detected. ***'
+            sys.exit(1)
 
         return data_bits # without preamble
 
