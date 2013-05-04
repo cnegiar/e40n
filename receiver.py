@@ -76,16 +76,17 @@ class Receiver:
                 else:
                     preamble_samples.append(one)
 
-        correlation=0
         largest = 0
         preamble_offset= 0
 
         #Calculate the correlation between preamble and demodulated bits in order to find preamble start in demod_bits
-        for k in range (energy_offset,energy_offset+3*len(preamble_samples)):
-          for x in range (len(preamble_samples)):
-            correlation+= (preamble_samples[x]*demod_samples[x+k])
-          if correlation > largest: 
-            preamble_offset= k 
+        for k in xrange (energy_offset,energy_offset+3*len(preamble_samples)):
+          correlation=0
+          for x in xrange (len(preamble_samples)):
+            correlation += (preamble_samples[x]*demod_samples[k+x])
+          if correlation >= largest:
+            preamble_offset = k
+            largest = correlation
 
         
         '''
@@ -93,8 +94,8 @@ class Receiver:
         (not a absolute index reference by [0]). 
         Note that the final return value is [offset + pre_offset]
         '''
-
-        return energy_offset + preamble_offset
+        print preamble_offset
+        return preamble_offset
         
     def demap_and_check(self, demod_samples, preamble_start):
     
@@ -109,34 +110,33 @@ class Receiver:
            the preamble. If it is proceed, if not terminate the program. 
         Output is the array of data_bits (bits without preamble)
         '''
-
         preamble_bits= [1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1]
         mean_vals=[]
         curr_index = preamble_start
         for x in range (len(preamble_bits)):
-            middle_bits = demod_samples[curr_index+ (self.spb/4) : curr_index+ (self.spb*3)/4]
+            middle_bits = demod_samples[curr_index+(self.spb/4):curr_index+((self.spb*3)/4)]
             mean = 0
             for bit in middle_bits:
                 mean+= bit
-            mean/= len(middle_bits)
+            mean = float(mean)/len(middle_bits)
             mean_vals.append(mean)
             curr_index+= self.spb
         mean_1 = 0
         mean_0 = 0
-        for i in range (len(preamble_bits)):
+        for i in xrange (len(preamble_bits)):
             if preamble_bits[i]:
-                mean_0+= preamble_bits[i]
-            else : 
-                mean_1+= preamble_bits[i]
+                mean_1+= mean_vals[i]
+            else :
+                mean_0+= mean_vals[i]
         # There are 9 zeros in the preamble
-        mean_0/=9
+        mean_0= float(mean_0)/9
         # There are 15 ones in the preamble 
-        mean_1/=15
+        mean_1=float(mean_1)/15
         new_threshold = (mean_1+ mean_0)/2
-
         data_bits=[]
 
-        for x in range ((len(demod_samples) - preamble_start)/self.spb):
+        curr_index = preamble_start
+        while(curr_index< (preamble_start+24*self.spb)):
             middle_bits = demod_samples[curr_index+ (self.spb/4) : curr_index+ (self.spb*3)/4]
             mean = 0
             for bit in middle_bits:
@@ -146,7 +146,9 @@ class Receiver:
                 data_bits.append(1)
             else: 
                 data_bits.append(0)
-
+            curr_index+=self.spb
+        print data_bits
+        print preamble_bits
         demod_preamble = data_bits[:len(preamble_bits)]
         if demod_preamble == preamble_bits:
             data_bits=data_bits[len(preamble_bits):]
