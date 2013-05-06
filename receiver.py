@@ -94,7 +94,6 @@ class Receiver:
         (not a absolute index reference by [0]). 
         Note that the final return value is [offset + pre_offset]
         '''
-        print preamble_offset
         return preamble_offset
         
     def demap_and_check(self, demod_samples, preamble_start):
