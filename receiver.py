@@ -136,8 +136,9 @@ class Receiver:
         data_bits=[]
 
         curr_index = preamble_start
-        while(curr_index< (preamble_start+24*self.spb)):
+        while(curr_index+ self.spb < len(demod_samples)):
             middle_bits = demod_samples[curr_index+ (self.spb/4) : curr_index+ (self.spb*3)/4]
+            
             mean = 0
             for bit in middle_bits:
                 mean+= bit
@@ -147,11 +148,10 @@ class Receiver:
             else: 
                 data_bits.append(0)
             curr_index+=self.spb
-        print data_bits
-        print preamble_bits
         demod_preamble = data_bits[:len(preamble_bits)]
+   
         if demod_preamble == preamble_bits:
-            data_bits=data_bits[len(preamble_bits):]
+            data_bits= data_bits[len(preamble_bits):]
         else : 
             print '*** ERROR: Preamble was not detected. ***'
             sys.exit(1)
