@@ -37,8 +37,6 @@ class Receiver:
         First, find the first sample index where you detect energy based on the
         moving average method described in the milestone 2 description.
         '''
-        # Fill in your implementation of the high-energy check procedure
-
         energy_offset = -1 
         for offset in range(len(demod_samples)):
              curr_samples= demod_samples[offset:offset+self.spb]
@@ -63,9 +61,7 @@ class Receiver:
         Then, starting from the demod_samples[offset], find the sample index where
         the cross-correlation between the signal samples and the preamble 
         samples is the highest. 
-        '''
-        # Fill in your implementation of the cross-correlation check procedure
-        
+        '''        
         preamble_offset = 0
         preamble_bits = [1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1]
         preamble_samples = []
