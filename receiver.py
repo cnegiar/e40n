@@ -17,7 +17,7 @@ class Receiver:
         '''
         self.fc = carrier_freq
         self.samplerate = samplerate
-        self.spb = spb 
+        self.spb = spb
         print 'Receiver: '
 
     def detect_threshold(self, demod_samples):
