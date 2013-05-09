@@ -26,9 +26,8 @@ class Transmitter:
             databits_with_preamble.append(bit)
         for bit in databits:
             databits_with_preamble.append(bit)
-
+        print "\tSent Preamble:  " + str(preamble_bits)
         return databits_with_preamble
-
 
     def bits_to_samples(self, databits_with_preamble):
         '''
@@ -44,6 +43,7 @@ class Transmitter:
             else: 
                 for x in range (self.spb):
                     samples.append(self.one)
+        print "\tNumber of samples being sent: " + str(len(samples))
         return samples
         
 

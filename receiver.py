@@ -17,7 +17,7 @@ class Receiver:
         '''
         self.fc = carrier_freq
         self.samplerate = samplerate
-        self.spb = spb 
+        self.spb = spb
         print 'Receiver: '
 
     def detect_threshold(self, demod_samples):
@@ -37,20 +37,18 @@ class Receiver:
         First, find the first sample index where you detect energy based on the
         moving average method described in the milestone 2 description.
         '''
-        # Fill in your implementation of the high-energy check procedure
-
         energy_offset = -1 
         for offset in range(len(demod_samples)):
-             curr_samples= demod_samples[offset: offset+self.spb]
+             curr_samples= demod_samples[offset:offset+self.spb]
              average = 0
              #IGNORE FIRST SPB/4 AND LAST SPB/4 BITS OF SAMPLE 
-             central_samples= curr_samples[(self.spb/4) : (self.spb*3)/4 ]
+             central_samples= curr_samples[(self.spb/4):(self.spb*3)/4]
              for sample in central_samples:
                 average += sample
-             average/= len(central_samples)
+             average /= len(central_samples)
              #if this average is greater than average of mean_one and threshold, then this use this offset
              if average > ((one + thresh)/2):
-                energy_offset=offset
+                energy_offset = offset
                 break 
 
         if energy_offset < 0:
@@ -63,15 +61,13 @@ class Receiver:
         Then, starting from the demod_samples[offset], find the sample index where
         the cross-correlation between the signal samples and the preamble 
         samples is the highest. 
-        '''
-        # Fill in your implementation of the cross-correlation check procedure
-        
+        '''        
         preamble_offset = 0
-        preamble_bits= [1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1]
-        preamble_samples=[]
+        preamble_bits = [1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1]
+        preamble_samples = []
         for bit in preamble_bits:
             for x in range(self.spb):
-                if bit==0:
+                if bit == 0:
                     preamble_samples.append(0)
                 else:
                     preamble_samples.append(one)
@@ -80,14 +76,12 @@ class Receiver:
         preamble_offset= 0
 
         #Calculate the correlation between preamble and demodulated bits in order to find preamble start in demod_bits
-        for k in xrange (energy_offset,energy_offset+3*len(preamble_samples)):
-          correlation=0
-          for x in xrange (len(preamble_samples)):
-            correlation += (preamble_samples[x]*demod_samples[k+x])
-          if correlation >= largest:
-            preamble_offset = k
-            largest = correlation
-
+        for x in xrange(0, 3*len(preamble_samples)):
+            offset = energy_offset + x
+            correlation = numpy.dot(demod_samples[offset:offset+len(preamble_samples)], preamble_samples)
+            if correlation >= largest:
+                preamble_offset = offset
+                largest = correlation
         
         '''
         [preamble_offset] is the additional amount of offset starting from [offset],
@@ -109,48 +103,48 @@ class Receiver:
            the preamble. If it is proceed, if not terminate the program. 
         Output is the array of data_bits (bits without preamble)
         '''
-        preamble_bits= [1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1]
-        mean_vals=[]
+        preamble_bits = [1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1]
+        mean_vals = []
         curr_index = preamble_start
-        for x in range (len(preamble_bits)):
+        for x in range(len(preamble_bits)):
             middle_bits = demod_samples[curr_index+(self.spb/4):curr_index+((self.spb*3)/4)]
             mean = 0
             for bit in middle_bits:
-                mean+= bit
+                mean += bit
             mean = float(mean)/len(middle_bits)
             mean_vals.append(mean)
-            curr_index+= self.spb
+            curr_index += self.spb
         mean_1 = 0
         mean_0 = 0
         for i in xrange (len(preamble_bits)):
             if preamble_bits[i]:
-                mean_1+= mean_vals[i]
+                mean_1 += mean_vals[i]
             else :
-                mean_0+= mean_vals[i]
+                mean_0 += mean_vals[i]
         # There are 9 zeros in the preamble
-        mean_0= float(mean_0)/9
+        mean_0 = float(mean_0)/9
         # There are 15 ones in the preamble 
-        mean_1=float(mean_1)/15
+        mean_1 = float(mean_1)/15
         new_threshold = (mean_1+ mean_0)/2
-        data_bits=[]
+        data_bits = []
 
         curr_index = preamble_start
-        while(curr_index+ self.spb < len(demod_samples)):
-            middle_bits = demod_samples[curr_index+ (self.spb/4) : curr_index+ (self.spb*3)/4]
+        while(curr_index + self.spb < len(demod_samples)):
+            middle_bits = demod_samples[curr_index+(self.spb/4):curr_index+ (self.spb*3)/4]
             
             mean = 0
             for bit in middle_bits:
-                mean+= bit
-            mean/= len(middle_bits)
+                mean += bit
+            mean /= len(middle_bits)
             if mean > new_threshold:
                 data_bits.append(1)
             else: 
                 data_bits.append(0)
-            curr_index+=self.spb
+            curr_index += self.spb
         demod_preamble = data_bits[:len(preamble_bits)]
    
         if demod_preamble == preamble_bits:
-            data_bits= data_bits[len(preamble_bits):]
+            data_bits = data_bits[len(preamble_bits):]
         else : 
             print '*** ERROR: Preamble was not detected. ***'
             sys.exit(1)
