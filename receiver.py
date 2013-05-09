@@ -78,7 +78,8 @@ class Receiver:
         #Calculate the correlation between preamble and demodulated bits in order to find preamble start in demod_bits
         for x in xrange(0, 3*len(preamble_samples)):
             offset = energy_offset + x
-            correlation = numpy.dot(demod_samples[offset:offset+len(preamble_samples)], preamble_samples)
+            norm = numpy.linalg.norm(demod_samples[offset:offset+len(preamble_samples)])
+            correlation = numpy.dot(demod_samples[offset:offset+len(preamble_samples)], preamble_samples)/norm
             if correlation >= largest:
                 preamble_offset = offset
                 largest = correlation
