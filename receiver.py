@@ -142,12 +142,14 @@ class Receiver:
                 data_bits.append(0)
             curr_index += self.spb
         demod_preamble = data_bits[:len(preamble_bits)]
-   
+
         if demod_preamble == preamble_bits:
             data_bits = data_bits[len(preamble_bits):]
         else : 
             print '*** ERROR: Preamble was not detected. ***'
             sys.exit(1)
+
+      
 
         return data_bits # without preamble
 
