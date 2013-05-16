@@ -16,7 +16,6 @@ def modulate (fc, samplerate, samples):
 def demodulate (fc, samplerate, samples):
    return common_txrx_mil3.demodulate(fc, samplerate, samples)
 
-################
 '''
 If you need any functions that 
 you need commonly in both transmitter and receiver,

@@ -45,7 +45,9 @@ class Receiver:
              central_samples= curr_samples[(self.spb/4):(self.spb*3)/4]
              for sample in central_samples:
                 average += sample
-             average /= len(central_samples)
+
+             average = average/ len(central_samples)
+
              #if this average is greater than average of mean_one and threshold, then this use this offset
              if average > ((one + thresh)/2):
                 energy_offset = offset
@@ -78,7 +80,8 @@ class Receiver:
         #Calculate the correlation between preamble and demodulated bits in order to find preamble start in demod_bits
         for x in xrange(0, 3*len(preamble_samples)):
             offset = energy_offset + x
-            correlation = numpy.dot(demod_samples[offset:offset+len(preamble_samples)], preamble_samples)
+            norm = numpy.linalg.norm(demod_samples[offset:offset+len(preamble_samples)])
+            correlation = numpy.dot(demod_samples[offset:offset+len(preamble_samples)], preamble_samples)/norm
             if correlation >= largest:
                 preamble_offset = offset
                 largest = correlation
@@ -143,6 +146,8 @@ class Receiver:
             curr_index += self.spb
         demod_preamble = data_bits[:len(preamble_bits)]
 
+        print demod_preamble
+        
         if demod_preamble == preamble_bits:
             data_bits = data_bits[len(preamble_bits):]
         else : 
