@@ -11,7 +11,7 @@ def modulate(fc, samplerate, samples):
   of frequency fc, sampled at samplerate
   '''
   for n in xrange (len(samples)):
-    samples[n] *=math.cos((2*pi * fc *n)/ samplerate)
+    samples[n] *=math.cos((2*pi * fc *n )/ samplerate)
   return samples
 
 def demodulate(fc, samplerate, samples):
@@ -19,7 +19,7 @@ def demodulate(fc, samplerate, samples):
   A demodulator that performs quadrature demodulation
   '''
   for n in range (0,len(samples)):
-    samples[n]*=(math.cos(2*pi*fc*n)/samplerate)
+    samples[n]*=math.cos((2*pi*fc*n)/samplerate)
   
   demod_samples= lpfilter(samples,(pi *fc)/ samplerate)
   return demod_samples
@@ -29,17 +29,17 @@ def lpfilter(samples_in, omega_cut):
   A low-pass filter of frequency omega_cut.
   '''
   # set the filter unit sample response
-  demod_samples=[]
-  for n in xrange (0,len(samples_in)):
-    weight=0
-    demod_sample=0
-    for x in range(-50, 50):
+
+  for n in xrange(0,len(samples_in)):
+    sample=0
+    for x in xrange(-50,50):
       if x==0 :
-         weight =(omega_cut/pi)
+         weight=(omega_cut/pi)
       else:
-         weight=(math.sin(omega_cut*x)/(pi*x))
-      if (n-x >= 0 and n-x < len(samples_in)):
-         demod_sample= demod_sample+(weight* samples_in[n-x]) 
-    demod_samples.append(demod_sample)
-  return demod_samples
+         weight= math.sin(omega_cut*x)/(pi*x)
+      if (n-x>=0 and n-x < len(samples_in)):
+        sample+= (weight* samples_in[n-x]) 
+    samples_in[n]=sample
+
+  return samples_in
 
