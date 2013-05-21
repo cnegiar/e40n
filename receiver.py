@@ -65,7 +65,9 @@ class Receiver:
         samples is the highest. 
         '''        
         preamble_offset = 0
-        preamble_bits = [1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1]
+        #preamble_bits = [1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1]
+        preamble_bits= [1,1,1,1,1,0,1,1,1,1,0,0,1,1,1,0,1,0,1,1,0,0,0,0,1,0,1,1,1,0,0,0,
+   1,1,0,1,1,0,1,0,0,1,0,0,0,1,0,0,1,1,0,0,1,0,1,0,1,0,0,0,0,0,0]
         preamble_samples = []
         for bit in preamble_bits:
             for x in range(self.spb):
@@ -106,7 +108,9 @@ class Receiver:
            the preamble. If it is proceed, if not terminate the program. 
         Output is the array of data_bits (bits without preamble)
         '''
-        preamble_bits = [1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1]
+       # preamble_bits = [1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1]
+       preamble_bits = [1,1,1,1,1,0,1,1,1,1,0,0,1,1,1,0,1,0,1,1,0,0,0,0,1,0,1,1,1,0,0,0,
+   1,1,0,1,1,0,1,0,0,1,0,0,0,1,0,0,1,1,0,0,1,0,1,0,1,0,0,0,0,0,0]
         mean_vals = []
         curr_index = preamble_start
         for x in range(len(preamble_bits)):
@@ -148,11 +152,11 @@ class Receiver:
 
         print demod_preamble
         
-        if demod_preamble == preamble_bits:
-            data_bits = data_bits[len(preamble_bits):]
-        else : 
-            print '*** ERROR: Preamble was not detected. ***'
-            sys.exit(1)
+      #  if demod_preamble == preamble_bits:
+        data_bits = data_bits[len(preamble_bits):]
+       # else : 
+         #   print '*** ERROR: Preamble was not detected. ***'
+         #   sys.exit(1)
 
       
 
