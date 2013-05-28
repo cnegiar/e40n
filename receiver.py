@@ -65,8 +65,8 @@ class Receiver:
         samples is the highest. 
         '''        
         preamble_offset = 0
-        preamble_bits = [1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1]
-        #preamble_bits= [1,1,1,1,1,0,1,1,1,1,0,0,1,1,1,0,1,0,1,1,0,0,0,0,1,0,1,1,1,0,0,0,1,1,0,1,1,0,1,0,0,1,0,0,0,1,0,0,1,1,0,0,1,0,1,0,1,0,0,0,0,0,0]
+        #preamble_bits = [1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1]
+        preamble_bits= [1,1,1,1,1,0,1,1,1,1,0,0,1,1,1,0,1,0,1,1,0,0,0,0,1,0,1,1,1,0,0,0,1,1,0,1,1,0,1,0,0,1,0,0,0,1,0,0,1,1,0,0,1,0,1,0,1,0,0,0,0,0,0]
         preamble_samples = []
         for bit in preamble_bits:
             for x in range(self.spb):
@@ -107,8 +107,8 @@ class Receiver:
            the preamble. If it is proceed, if not terminate the program. 
         Output is the array of data_bits (bits without preamble)
         '''
-        preamble_bits = [1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1]
-        #preamble_bits = [1,1,1,1,1,0,1,1,1,1,0,0,1,1,1,0,1,0,1,1,0,0,0,0,1,0,1,1,1,0,0,0,1,1,0,1,1,0,1,0,0,1,0,0,0,1,0,0,1,1,0,0,1,0,1,0,1,0,0,0,0,0,0]
+        #preamble_bits = [1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1]
+        preamble_bits = [1,1,1,1,1,0,1,1,1,1,0,0,1,1,1,0,1,0,1,1,0,0,0,0,1,0,1,1,1,0,0,0,1,1,0,1,1,0,1,0,0,1,0,0,0,1,0,0,1,1,0,0,1,0,1,0,1,0,0,0,0,0,0]
         mean_vals = []
         curr_index = preamble_start
         for x in range(len(preamble_bits)):
@@ -126,10 +126,12 @@ class Receiver:
                 mean_1 += mean_vals[i]
             else :
                 mean_0 += mean_vals[i]
-        # There are 9 zeros in the preamble
-        mean_0 = float(mean_0)/9
-        # There are 15 ones in the preamble 
-        mean_1 = float(mean_1)/15
+        # There are 9 zeros in the  short preamble
+        #There are 32 zeros in the long preamble
+        mean_0 = float(mean_0)/32
+        # There are 15 ones in the short preamble 
+        # There are 31 ones in the long preamble 
+        mean_1 = float(mean_1)/31
         new_threshold = (mean_1+ mean_0)/2
         data_bits = []
 
