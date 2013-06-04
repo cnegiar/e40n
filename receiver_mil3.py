@@ -58,10 +58,6 @@ def detect_threshold(demod_samples):
       center1=new_1
       center2=new_2
 
- 
-  # insert code to associate the higher of the two centers 
-  # with one and the lower with zero
-
   zero = min(center1, center2)
   one = max(center1,center2)
   

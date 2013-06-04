@@ -5,6 +5,7 @@ import scipy.cluster.vq
 import common_txrx as common
 from numpy import linalg as LA
 import receiver_mil3
+import hamming_db as ham
 
 class Receiver:
     def __init__(self, carrier_freq, samplerate, spb):
@@ -19,6 +20,57 @@ class Receiver:
         self.samplerate = samplerate
         self.spb = spb
         print 'Receiver: '
+
+    # Computes the syndromes and checks to see if a correction needs to be made.
+    # If so, make the correction and return the correct bits and 1 as the error count.
+    # Else return the original bits and 0 as the error count.
+    def correct(self, chunk, n, k, H):
+        cols = numpy.hsplit(H, n)
+        syndrome = numpy.dot(H, numpy.transpose(chunk))
+        # account for xor
+        for x in xrange(len(syndrome)):
+            if syndrome[x]%2 == 0: syndrome[x] = 0
+            else: syndrome[x] = 1
+        # check if correct
+        correct = True
+        for x in xrange(len(syndrome)):
+            if syndrome[x] != 0: correct = False
+        if correct: return 0, chunk[:k]
+        # correct error
+        for x in xrange(k):
+            if not numpy.array_equal(syndrome, cols[x]):
+                chunk[x] = 1 if chunk[x] == 0 else 0
+                return 1, chunk[:k]
+
+    def hamming_decoding(self, coded_bits, index):
+        decoded_bits = []
+        num_errors = 0
+        n, k, H = ham.parity_lookup(index)
+        coding_rate = float(k)/n
+        while len(coded_bits)%n != 0:
+            coded_bits = numpy.append(coded_bits, 0)
+        for x in xrange(0, len(coded_bits), n):
+            chunk = coded_bits[x:x+n]
+            corrected, correct_chunk  = self.correct(chunk, n, k, H)
+            num_errors += corrected
+            decoded_bits = numpy.append(decoded_bits, correct_chunk)
+        decoded_bits = ''.join(numpy.char.mod('%d', decoded_bits))
+        return decoded_bits, coding_rate, num_errors
+
+    def decode(self, rcd_bits):
+        encoding_options = [[3,1],[7,4],[15,11],[31,26]]
+        header = rcd_bits[0:32*3] #length of encoded header
+        decoded_header, temp_cr, temp_ne = self.hamming_decoding(header, 0)
+        data_len = int(str(decoded_header[:30]), 2) 
+        index = int(str(decoded_header[30:]), 2)
+        # print "Len = " + str(data_len)
+        # print "Ind = " + str(index)
+        data = rcd_bits[32*3:32*3+data_len]
+        print data
+        decoded_data, coding_rate, num_errors = self.hamming_decoding(data, index)
+        print "channel coding rate: " + str(coding_rate)
+        print 'errors corrected: ' + str(num_errors)
+        return list(int(x) for x in decoded_data)
 
     def detect_threshold(self, demod_samples):
         '''
