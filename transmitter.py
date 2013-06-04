@@ -38,6 +38,9 @@ class Transmitter:
         for bit in header_str:
             header.append(int(bit,2))
         index, coded_header = self.hamming_encoding(header, True)
+        ##### TEST #####
+        print "CODED DATA: " + str(coded_data)
+        ##### END TEST #####
         return numpy.append(coded_header, coded_data)
 
     def add_preamble(self, databits):

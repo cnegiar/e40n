@@ -68,6 +68,9 @@ class Receiver:
         data = rcd_bits[32*3:32*3+data_len]
         print data
         decoded_data, coding_rate, num_errors = self.hamming_decoding(data, index)
+        ##### TEST #####
+        print "DECOD DATA: " + str(list(int(x) for x in decoded_data))
+        ##### END TEST #####
         print "channel coding rate: " + str(coding_rate)
         print 'errors corrected: ' + str(num_errors)
         return list(int(x) for x in decoded_data)
@@ -115,7 +118,7 @@ class Receiver:
         Then, starting from the demod_samples[offset], find the sample index where
         the cross-correlation between the signal samples and the preamble 
         samples is the highest. 
-        '''        
+        ''' 
         preamble_offset = 0
         #preamble_bits = [1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1]
         preamble_bits= [1,1,1,1,1,0,1,1,1,1,0,0,1,1,1,0,1,0,1,1,0,0,0,0,1,0,1,1,1,0,0,0,1,1,0,1,1,0,1,0,0,1,0,0,0,1,0,0,1,1,0,0,1,0,1,0,1,0,0,0,0,0,0]
@@ -130,14 +133,18 @@ class Receiver:
         largest = 0
         preamble_offset= 0
 
+        print "ENTERING CROSS_CORR"
         #Calculate the correlation between preamble and demodulated bits in order to find preamble start in demod_bits
+        preamble_samples = numpy.array(preamble_samples)
         for x in xrange(0, 3*len(preamble_samples)):
+            demod_arr = numpy.array(demod_samples[offset:offset+len(preamble_samples)])
             offset = energy_offset + x
-            norm = numpy.linalg.norm(demod_samples[offset:offset+len(preamble_samples)])
-            correlation = numpy.dot(demod_samples[offset:offset+len(preamble_samples)], preamble_samples)/norm
+            norm = numpy.linalg.norm(demod_arr)
+            correlation = numpy.dot(demod_arr, preamble_samples)/norm
             if correlation >= largest:
                 preamble_offset = offset
                 largest = correlation
+        print "EXITING CROSS_CORR"
         
         '''
         [preamble_offset] is the additional amount of offset starting from [offset],

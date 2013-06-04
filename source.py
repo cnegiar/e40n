@@ -36,7 +36,6 @@ class Source:
 
             huff_databits, huffman_stats = self.huffman_encode(payload)
 
-
             hdr=self.get_header (len(huff_databits), len(payload) , srctype, huffman_stats)
             for bit in hdr: 
                 databits.append(int(bit))
@@ -86,8 +85,8 @@ class Source:
             curr_index+=4
 
         
-        huff_map= self.encode(huff_stats)
-        huff_map=dict(huff_map)
+        huff_map = self.encode(huff_stats)
+        huff_map = dict(huff_map)
 
         curr_index=0
         while curr_index<len(payload):
@@ -129,7 +128,7 @@ class Source:
     def generate_patterns(self):
         patterns=[]
         for x in xrange(0, 16):
-            bin= '{0:04b}'.format(x)
+            bin = '{0:04b}'.format(x)
             patterns.append(bin)
         return patterns
 
@@ -155,7 +154,7 @@ class Source:
                     binary = format(occurrences, '010b')
                     header+=binary
                 else:
-                    for x in range(10):
+                    for x in xrange(10):
                       header+='0'
 
         print '\tSource type: ', type
