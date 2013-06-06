@@ -21,6 +21,7 @@ class Source:
             databits =[]
             payload=[]
             srctype=0 
+            huff_databits=[]
             if self.fname is not None:
                 if self.fname.endswith('.png') or self.fname.endswith('.PNG'):
                     payload = self.bits_from_image(self.fname)
@@ -28,15 +29,16 @@ class Source:
                 else:           
                     payload = self.text2bits(self.fname)
                     srctype = '01'
+                huff_databits, huffman_stats = self.huffman_encode(payload)
+                hdr=self.get_header (len(huff_databits), len(payload) , srctype, huffman_stats)
             else:               
                 length = self.monotone
                 for i in range (0, length):
-                    payload.append(1)
+                    huff_databits.append(1)
                 srctype='11'
+                hdr= self.get_header(len(huff_databits), len(huff_databits),srctype, None)
 
-            huff_databits, huffman_stats = self.huffman_encode(payload)
-
-            hdr=self.get_header (len(huff_databits), len(payload) , srctype, huffman_stats)
+           
             for bit in hdr: 
                 databits.append(int(bit))
             for bit in huff_databits:
@@ -85,8 +87,8 @@ class Source:
             curr_index+=4
 
         
-        huff_map = self.encode(huff_stats)
-        huff_map = dict(huff_map)
+        huff_map= self.encode(huff_stats)
+        huff_map=dict(huff_map)
 
         curr_index=0
         while curr_index<len(payload):
@@ -128,7 +130,7 @@ class Source:
     def generate_patterns(self):
         patterns=[]
         for x in xrange(0, 16):
-            bin = '{0:04b}'.format(x)
+            bin= '{0:04b}'.format(x)
             patterns.append(bin)
         return patterns
 
@@ -151,15 +153,14 @@ class Source:
             for pattern in four_bit_patterns:
                 if pattern in huff_map.keys() :
                     occurrences = huff_map[pattern]
-                    binary = format(occurrences, '010b')
+                    binary = format(occurrences, '011b')
                     header+=binary
                 else:
-                    for x in xrange(10):
+                    for x in range(11):
                       header+='0'
 
         print '\tSource type: ', type
         print '\tCompressed Payload Length: ', str(payload_length)
         print '\tCompression Rate: ', str(float(payload_length)/old_payload_len)
         print '\tHeader:  [' + ', '.join(header) + ']'
-
         return header 

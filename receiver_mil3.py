@@ -14,7 +14,7 @@ def detect_threshold(demod_samples):
         # systems use a random scrambler to XOR the input to balance
         # the zeroes and ones. We have decided to avoid that degree of
         # complexity in audiocom (for the time being, anyway).
-
+  print "BEGINNING THRESH CALC"
 	# initialization
   center1 = min(demod_samples)
   center2 = max(demod_samples) 
@@ -60,6 +60,8 @@ def detect_threshold(demod_samples):
 
   zero = min(center1, center2)
   one = max(center1,center2)
+  
+  print "DONE THRESH CALC"
   
   print "Threshold for 1:"
   print one

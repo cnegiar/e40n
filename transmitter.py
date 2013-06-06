@@ -22,7 +22,11 @@ class Transmitter:
             databits.append(0)
         for x in xrange(0, len(databits), k):
             chunk = databits[x:x+k]
-            coded_bits = numpy.append(coded_bits, numpy.dot(chunk, G))
+            coded_chunk = numpy.dot(chunk, G)
+            for y in xrange(len(coded_chunk)):
+                if coded_chunk[y]%2 == 0: coded_chunk[y] = 0
+                else: coded_chunk[y] = 1
+            coded_bits = numpy.append(coded_bits, coded_chunk)
         return index, coded_bits
 
     def encode(self, databits):
@@ -39,7 +43,8 @@ class Transmitter:
             header.append(int(bit,2))
         index, coded_header = self.hamming_encoding(header, True)
         ##### TEST #####
-        print "CODED DATA: " + str(coded_data)
+        print "ORIGINAL HEAD: " + str(list(int(x) for x in header))
+        #print "ORIGINAL DATA: " + str(list(int(x) for x in databits))
         ##### END TEST #####
         return numpy.append(coded_header, coded_data)
 

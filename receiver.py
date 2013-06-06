@@ -37,10 +37,16 @@ class Receiver:
             if syndrome[x] != 0: correct = False
         if correct: return 0, chunk[:k]
         # correct error
+        #print chunk[:k]
+        # print "SYND = " + str(syndrome)
+        # for vec in cols:
+        #     print "HCOL = " + str(numpy.transpose(vec)[0])
         for x in xrange(k):
-            if not numpy.array_equal(syndrome, cols[x]):
+            if numpy.array_equal(syndrome, numpy.transpose(cols[x])[0]):
+                #print "Corrected"
                 chunk[x] = 1 if chunk[x] == 0 else 0
-                return 1, chunk[:k]
+        #print chunk[:k]
+        return 1, chunk[:k]
 
     def hamming_decoding(self, coded_bits, index):
         decoded_bits = []
@@ -63,16 +69,17 @@ class Receiver:
         decoded_header, temp_cr, temp_ne = self.hamming_decoding(header, 0)
         data_len = int(str(decoded_header[:30]), 2) 
         index = int(str(decoded_header[30:]), 2)
-        # print "Len = " + str(data_len)
-        # print "Ind = " + str(index)
-        data = rcd_bits[32*3:32*3+data_len]
-        print data
+        data = rcd_bits[32*3:]#32*3+data_len]
         decoded_data, coding_rate, num_errors = self.hamming_decoding(data, index)
         ##### TEST #####
-        print "DECOD DATA: " + str(list(int(x) for x in decoded_data))
+        #print data
+        #print "Len = " + str(data_len)
+        #print "Ind = " + str(index)
+        print "DECODED HEAD: " + str(list(int(x) for x in decoded_header))
+        #print "DECODED DATA: " + str(list(int(x) for x in decoded_data))
         ##### END TEST #####
         print "channel coding rate: " + str(coding_rate)
-        print 'errors corrected: ' + str(num_errors)
+        print "errors corrected: " + str(num_errors)
         return list(int(x) for x in decoded_data)
 
     def detect_threshold(self, demod_samples):
@@ -133,7 +140,7 @@ class Receiver:
         largest = 0
         preamble_offset= 0
 
-        print "ENTERING CROSS_CORR"
+        #print "ENTERING CROSS_CORR"
         #Calculate the correlation between preamble and demodulated bits in order to find preamble start in demod_bits
         preamble_samples = numpy.array(preamble_samples)
         for x in xrange(0, 3*len(preamble_samples)):
@@ -144,7 +151,7 @@ class Receiver:
             if correlation >= largest:
                 preamble_offset = offset
                 largest = correlation
-        print "EXITING CROSS_CORR"
+        #print "EXITING CROSS_CORR"
         
         '''
         [preamble_offset] is the additional amount of offset starting from [offset],
@@ -213,7 +220,7 @@ class Receiver:
         
       #  if demod_preamble == preamble_bits:
         data_bits = data_bits[len(preamble_bits):]
-       # else : 
+      #  else : 
          #   print '*** ERROR: Preamble was not detected. ***'
          #   sys.exit(1)
 

@@ -35,22 +35,26 @@ class Sink:
         huffman_stats={}
 
         #Since payload size is forced into a 16-bit binary number and srctype is two digits + 160 for the huff stats
-        for i in range (0, 178):
+        for i in range (0, 18):
             header_bits.append(recd_bits[i])
 
         srctype, payload_length = self.read_header(header_bits)
 
-        print recd_bits
+        #print len(recd_bits)
+        #print payload_length
+        #print srctype
 
-        if srctype !=2 : 
+        if srctype !=2: 
+            for i in range (18, 194):
+                header_bits.append(recd_bits[i])
             #Start at 178 since that's where header ends, and go for payload length counts (so to payload length +178)
-            for i in range (178,payload_length+178):
+            for i in range (194,payload_length+194):
                 rcd_payload.append(recd_bits[i])
             huffman_stats=self.read_stats(header_bits[18:])
             huff_decoded_bits= self.huff_decode(rcd_payload, huffman_stats)
         else : 
             for i in range(18, payload_length+18):
-                rcd_payload.apend(recd_bits[i])
+                rcd_payload.append(recd_bits[i])
 
         if srctype == 0:
             self.image_from_bits(huff_decoded_bits, 'rcd-image.png')
@@ -68,13 +72,13 @@ class Sink:
         patterns = self.generate_patterns()
         while i< len(header_stats):
             freq= ''
-            for x in xrange(10):
+            for x in xrange(11):
                 freq+= str(header_stats[i+x])
             freq=int(freq,2)
             pattern = patterns[pattern_index]
             if freq != 0 : 
                 huff_stats[pattern]= freq
-            i+=10
+            i+=11
             pattern_index+=1
         return huff_stats
 
@@ -159,7 +163,7 @@ class Sink:
     def read_header(self, header_bits): 
         # Given the header bits, compute the payload length
         # and source type (compatible with get_header on source)
-	srctype = header_bits[0]+ header_bits[1]
+        srctype = header_bits[0]+ header_bits[1]
         payload_length = ''
         for i in xrange (2,18):
             payload_length += str(header_bits[i])
