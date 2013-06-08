@@ -133,15 +133,23 @@ if __name__ == '__main__':
     rcdbits = r.demap_and_check(demod_samples, barker_start)
     decoded_bits = r.decode(rcdbits)
 
-    # push into sink
-    sink = Sink()
-    rcd_payload = sink.process(decoded_bits)
-    
-    if len(rcd_payload) > 0:
+    #BEGIN PASTE
+    if len(decoded_bits) > 0:
         hd, err = common_srcsink.hamming(decoded_bits, databits)
         print 'Hamming distance for payload at frequency', fc,'Hz:', hd, 'BER:', err
     else:
         print 'Could not recover transmission.'
+    #END PASTE
+
+    # push into sink
+    sink = Sink()
+    rcd_payload = sink.process(decoded_bits)
+    
+    # if len(rcd_payload) > 0:
+    #     hd, err = common_srcsink.hamming(decoded_bits, databits)
+    #     print 'Hamming distance for payload at frequency', fc,'Hz:', hd, 'BER:', err
+    # else:
+    #     print 'Could not recover transmission.'
 
     if opt.graph:
                 len_mod = len(mod_samples) - opt.spb*opt.silence 

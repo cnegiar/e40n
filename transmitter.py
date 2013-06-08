@@ -5,13 +5,13 @@ import hamming_db as ham
 
 class Transmitter:
 
-    def __init__(self, carrier_freq, samplerate, one, spb, silence, cc_len):
+    def __init__(self, carrier_freq, samplerate, one, spb, silence):#, cc_len):
         self.fc = carrier_freq  # in cycles per sec, i.e., Hz
         self.samplerate = samplerate
         self.one = one
         self.spb = spb
         self.silence = silence
-        self.cc_len = cc_len
+        #self.cc_len = cc_len
         print 'Transmitter: '
 
     def hamming_encoding(self, databits, is_header):

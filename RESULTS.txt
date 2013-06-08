@@ -1,0 +1,2 @@
+We tested on 32pix.png
+

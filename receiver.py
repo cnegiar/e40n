@@ -43,8 +43,11 @@ class Receiver:
         #     print "HCOL = " + str(numpy.transpose(vec)[0])
         for x in xrange(k):
             if numpy.array_equal(syndrome, numpy.transpose(cols[x])[0]):
-                #print "Corrected"
+                # print "Original"
+                # print chunk
                 chunk[x] = 1 if chunk[x] == 0 else 0
+                # print "Corrected"
+                print chunk[:k]
         #print chunk[:k]
         return 1, chunk[:k]
 
